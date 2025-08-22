@@ -10,8 +10,6 @@ class Post(Base):
     published = Column(Boolean,server_default="True", nullable=False)
     created_at = Column(DateTime(timezone=True),server_default=func.now(),nullable=False)
     owner_id = Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),nullable=False)
-    voters_id = Column(ARRAY(Integer),server_default="{}",nullable=False)
-    voters = Column(Integer,server_default="0",nullable=False)
     
     owner = relationship("User")
     
