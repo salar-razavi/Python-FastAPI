@@ -1,0 +1,49 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  standard:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: standard
+    stream: ext://sys.stdout
+  file:
+    class: logging.FileHandler
+    level: INFO
+    formatter: standard
+    filename: logs/app.log
+
+loggers:
+  uvicorn:
+    level: INFO
+    handlers: [console, file]
+    propagate: no
+
+  uvicorn.error:
+    level: INFO
+    handlers: [console, file]
+    propagate: no
+
+  uvicorn.access:
+    level: INFO
+    handlers: [console, file]
+    propagate: no
+
+  # 👇 اضافه کردن لاگر watchfiles
+  watchfiles:
+    level: WARNING     # یا ERROR اگر می‌خوای فقط خطاها ثبت شن
+    handlers: [console, file]
+    propagate: no
+
+  watchfiles.main:
+    level: WARNING
+    handlers: [console, file]
+    propagate: no
+
+root:
+  level: INFO
+  handlers: [console, file]
