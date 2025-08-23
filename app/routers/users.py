@@ -15,7 +15,7 @@ router = APIRouter(
 """ Create User"""
 @router.post("/create",response_model=schemas.User_Out,status_code=status.HTTP_201_CREATED)
 async def create_user(user : schemas.User_Create,db : AsyncSession = Depends(database.get_db)):
-    result = await db.execute(select(models.Post).where(models.User.email == user.email))
+    result = await db.execute(select(models.User).where(models.User.email == user.email))
     existing_user = result.scalars().first()
     if existing_user :
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail="Email Already Exist")
