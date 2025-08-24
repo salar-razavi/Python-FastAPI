@@ -41,10 +41,10 @@ async def posts(post : schemas.PostCreate, db : AsyncSession = Depends(database.
 
 
 """ Find Post By ID """
-@router.get("/{id}",response_model=schemas.Show_Posts)
+@router.get("/{id}",response_model=schemas.Show_Posts2)
 async def one_post(id : int, db : AsyncSession = Depends(database.get_db), current_user = Depends(oauth2.get_current_user)):
-    result = await db.execute(select(models.Post).where((models.Post.id == id),(models.Post.owner_id == current_user.id)))
-    finded_post = result.scalars().first()
+    result = await db.execute(select(models.Post,func.count(models.Vote.post_id).label("vote_count")).outerjoin(models.Vote,models.Post.id == models.Vote.post_id).group_by(models.Post.id).where((models.Post.id == id),(models.Post.owner_id == current_user.id)))
+    finded_post = result.mappings().first()
     if  not finded_post  :
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Not Authorized to perform requested action")
     if not finded_post:
