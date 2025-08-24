@@ -1,7 +1,6 @@
-from pydantic import BaseModel ,ConfigDict ,EmailStr
-from typing import Optional , List
+from pydantic import BaseModel ,ConfigDict ,EmailStr , conint
+from typing import Optional
 from datetime import datetime
-
 
 
 class User_Create(BaseModel):
@@ -49,12 +48,13 @@ class Show_Posts(BaseModel):
     published: bool
     owner_id : int
     created_at: datetime
-    voters : Optional[int] = 0
     owner : User_Out
-    
     class Config :
         orm_mode = True
-    
+class Show_Posts2(BaseModel):
+    Post : Show_Posts
+    vote_count : int
+    model_config = ConfigDict(from_attributes=True)
 class User_Update(BaseModel):
     password : str
     
@@ -64,3 +64,7 @@ class Token(BaseModel):
 
 class Token_Data(BaseModel):
     id : Optional[int] = None
+    
+class Vote(BaseModel):
+    post_id : int
+    dir : conint(le=1)

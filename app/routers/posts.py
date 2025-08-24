@@ -2,6 +2,7 @@
 from fastapi import status,HTTPException,Depends,APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select 
+from sqlalchemy import func
 from db import database , models , schemas
 from app import oauth2
 from typing import Optional
@@ -15,13 +16,15 @@ router = APIRouter(
 
 
 """ Show All Posts """
-@router.get("/",response_model=list[schemas.Show_Posts])
+@router.get("/",response_model=list[schemas.Show_Posts2])
 async def posts(db : AsyncSession = Depends(database.get_db), current_user = Depends(oauth2.get_current_user),limit: int = None,search:Optional[str]=""):
     result = await db.execute(select(models.Post).where(models.Post.owner_id == current_user.id,models.Post.title.contains(search)).limit(limit))
     all_posts = result.scalars().all()
-    if not all_posts:
+    result = await db.execute(select(models.Post,func.count(models.Vote.post_id).label("vote_count")).outerjoin(models.Vote,models.Post.id == models.Vote.post_id).group_by(models.Post.id).where(models.Post.owner_id == current_user.id,models.Post.title.contains(search)).limit(limit))
+    votes = result.mappings().all()
+    if not votes:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"You don't have any post")
-    return all_posts
+    return votes
 """ ------------------------------------------------------------------------------------------ """
 
 
