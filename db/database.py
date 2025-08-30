@@ -4,6 +4,7 @@ from sqlalchemy.engine import URL
 import logging
 from app.config import setting
 
+
 logging.basicConfig(
     filename="db.log",
     level=logging.INFO,
