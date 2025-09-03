@@ -2,7 +2,7 @@ from fastapi import status,HTTPException,Depends,APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from db import database , models , schemas
-from ..utils import hash_password
+from ..utils import hash_password , averfiy_password_hash , aget_password_hash
 
 
 router = APIRouter(
@@ -22,7 +22,7 @@ async def create_user(user : schemas.User_Create,db : AsyncSession = Depends(dat
     
     created_user = models.User(
         email=user.email,
-        password=hash_password(user.password)
+        password= await aget_password_hash(user.password)
     )
                                
     db.add(created_user)
@@ -37,7 +37,7 @@ async def create_user(user : schemas.User_Create,db : AsyncSession = Depends(dat
 
 """ Get All User"""
 @router.get("/",response_model=list[schemas.User_Out])
-async def create_user(db : AsyncSession = Depends(database.get_db)):
+async def get_all_user(db : AsyncSession = Depends(database.get_db)):
     result = await db.execute(select(models.User))
     all_user = result.scalars().all()
     return all_user
@@ -66,7 +66,7 @@ async def updated_user (id : int , user : schemas.User_Update , db : AsyncSessio
     if not updated_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"The Post with id = {id} Not Found")
     for key , value in user.model_dump(exclude_unset=True).items():
-        setattr (updated_user , key, hash_password(value))
+        setattr (updated_user , key, await aget_password_hash(value))
     await db.commit()
     await db.refresh(updated_user)
     return updated_user
