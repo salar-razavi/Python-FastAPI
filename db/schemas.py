@@ -13,6 +13,12 @@ class User_Out(BaseModel):
     email : EmailStr
     created_at : datetime
     model_config = ConfigDict(from_attributes=True)
+class Test_User_Out(BaseModel):
+    id : int
+    email : EmailStr
+    password : Optional[str] = None
+    created_at : datetime
+    model_config = ConfigDict(from_attributes=True)
     
 
 class PostBase(BaseModel):
@@ -64,7 +70,6 @@ class Token(BaseModel):
 
 class Token_Data(BaseModel):
     id : Optional[int] = None
-    
 class Vote(BaseModel):
     post_id : int
-    dir : conint(le=1)
+    dir : conint(le=1) # pyright: ignore[reportInvalidTypeForm]

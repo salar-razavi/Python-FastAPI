@@ -15,6 +15,6 @@ async def login_user(user_login : OAuth2PasswordRequestForm = Depends() , db : A
     result = await db.execute(select(models.User).where(models.User.email == user_login.username))
     find_user = result.scalars().first()
     if not find_user or not utils.verify_password(user_login.password,find_user.password):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Invalid Credential")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Invalid Credential Or Email Not Found")
     access_token = oauth2.create_access_token({"user_id": find_user.id})
     return {"access_token": access_token, "token_type": "bearer"}

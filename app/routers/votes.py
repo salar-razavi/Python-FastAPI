@@ -28,6 +28,8 @@ async def votes(vote: schemas.Vote, db : AsyncSession = Depends(database.get_db)
         await db.commit()
         await db.refresh(new_vote)
         return {"you voted successfully"}
+    if not finded_vote :
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="your vote does not exist")
     await db.delete(finded_vote)
     await db.commit()
     return{"your vote is deleted successfully"}

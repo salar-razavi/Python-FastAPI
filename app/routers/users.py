@@ -48,7 +48,7 @@ async def get_all_user(db : AsyncSession = Depends(database.get_db)):
 
 """ Get User By ID"""
 @router.get("/{id}",response_model=schemas.User_Out)
-async def create_user(id : int,db : AsyncSession = Depends(database.get_db)):
+async def get_user_id(id : int,db : AsyncSession = Depends(database.get_db)):
     result = await db.execute(select(models.User).where(models.User.id == id))
     finded_user = result.scalars().first()
     if not finded_user:
